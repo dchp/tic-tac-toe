@@ -32,7 +32,8 @@ const validate = (
 
   if (
     lineLengthToWin < MinLineLength ||
-    lineLengthToWin > Math.min(height, width)
+    lineLengthToWin > height ||
+    lineLengthToWin > width
   ) {
     return {
       status: ValidationStatusEnum.Error,
@@ -44,8 +45,7 @@ const validate = (
     playerXTerritory,
     playerOTerritory,
     lineLengthToWin,
-    width,
-    height
+    boardSize
   );
 };
 
@@ -53,9 +53,10 @@ const validateTerritory = (
   playerXTerritory: BoardTerritory,
   playerOTerritory: BoardTerritory,
   _lineLengthToWin: number,
-  boardWidth: number,
-  boardHeight: number
+  boardSize: BoardSize
 ): ValidationOutput => {
+  const { width, height } = boardSize;
+
   if (playerXTerritory & playerOTerritory) {
     return {
       status: ValidationStatusEnum.Error,
@@ -64,8 +65,8 @@ const validateTerritory = (
   }
 
   if (
-    playerXTerritory.toString(2).length > boardWidth * boardHeight ||
-    playerOTerritory.toString(2).length > boardWidth * boardHeight
+    playerXTerritory.toString(2).length > width * height ||
+    playerOTerritory.toString(2).length > width * height
   ) {
     return {
       status: ValidationStatusEnum.Error,
@@ -93,7 +94,7 @@ const validateTerritory = (
     };
   }
 
-  if (playerXSquaresCount + playerOSquaresCount === boardWidth * boardHeight) {
+  if (BigInt(playerXSquaresCount + playerOSquaresCount) === width * height) {
     return { status: ValidationStatusEnum.Tie };
   }
 

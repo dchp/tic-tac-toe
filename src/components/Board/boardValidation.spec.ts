@@ -4,7 +4,7 @@ import ValidationStatusEnum from "./types/ValidationStatusEnum";
 describe("boardValidation", () => {
   describe("validate", () => {
     const lineLength = 3;
-    const boardSize = { width: 3, height: 3 };
+    const boardSize = { width: 3n, height: 3n };
 
     it("should return error when first move is not made by player X", () => {
       const playerXTerritory = 0n;
@@ -59,6 +59,7 @@ describe("boardValidation", () => {
       expect(result).toEqual(expectedOutput);
     });
 
+    // TODO:
     it("should return win when player X win", () => {
       const playerXTerritory = 0b111_000_000n;
       const playerOTerritory = 0b000_000_110n;
@@ -76,6 +77,7 @@ describe("boardValidation", () => {
       expect(result).toEqual(expectedOutput);
     });
 
+    // TODO:
     it("should return error when player O move after win player X", () => {
       const playerXTerritory = 0b111_000_000n;
       const playerOTerritory = 0b000_000_111n;
@@ -168,12 +170,7 @@ describe("boardValidation", () => {
         error: "Line length must be at least 3 and not bigger than board size",
       };
 
-      const result = validate(
-        playerXTerritory,
-        playerOTerritory,
-        boardSize.width + 1,
-        boardSize
-      );
+      const result = validate(playerXTerritory, playerOTerritory, 4, boardSize);
 
       expect(result).toEqual(expectedOutput);
     });
@@ -186,12 +183,7 @@ describe("boardValidation", () => {
         error: "Line length must be at least 3 and not bigger than board size",
       };
 
-      const result = validate(
-        playerXTerritory,
-        playerOTerritory,
-        boardSize.height + 1,
-        boardSize
-      );
+      const result = validate(playerXTerritory, playerOTerritory, 4, boardSize);
 
       expect(result).toEqual(expectedOutput);
     });
@@ -205,8 +197,8 @@ describe("boardValidation", () => {
       };
 
       const result = validate(playerXTerritory, playerOTerritory, lineLength, {
-        width: 2,
-        height: 3,
+        width: 2n,
+        height: 3n,
       });
 
       expect(result).toEqual(expectedOutput);
@@ -221,8 +213,8 @@ describe("boardValidation", () => {
       };
 
       const result = validate(playerXTerritory, playerOTerritory, lineLength, {
-        width: 3,
-        height: 2,
+        width: 3n,
+        height: 2n,
       });
 
       expect(result).toEqual(expectedOutput);
@@ -237,8 +229,8 @@ describe("boardValidation", () => {
       };
 
       const result = validate(playerXTerritory, playerOTerritory, lineLength, {
-        width: 11,
-        height: 3,
+        width: 11n,
+        height: 3n,
       });
 
       expect(result).toEqual(expectedOutput);
@@ -253,8 +245,8 @@ describe("boardValidation", () => {
       };
 
       const result = validate(playerXTerritory, playerOTerritory, lineLength, {
-        width: 3,
-        height: 11,
+        width: 3n,
+        height: 11n,
       });
 
       expect(result).toEqual(expectedOutput);
@@ -270,8 +262,8 @@ describe("boardValidation", () => {
       };
 
       const result = validate(playerXTerritory, playerOTerritory, lineLength, {
-        width: 10,
-        height: 10,
+        width: 10n,
+        height: 10n,
       });
 
       expect(result).toEqual(expectedOutput);

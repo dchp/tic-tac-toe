@@ -1,3 +1,5 @@
+import BoardArray from "./BoardArray";
+
 // Binary number where each bit represents occupied board square
 export type BoardTerritory = bigint;
 
