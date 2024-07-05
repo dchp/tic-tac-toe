@@ -34,7 +34,7 @@ describe("BoardTerritory", () => {
 
   describe("getOccupiedSquaresCount", () => {
     it("should return 0 for empty territory", () => {
-      const territory = 0;
+      const territory = 0n;
       const expectedCount = 0;
 
       const result = getOccupiedSquaresCount(territory);
@@ -43,7 +43,7 @@ describe("BoardTerritory", () => {
     });
 
     it("should return correct count of occupied squares", () => {
-      const territory = 0b111_001_001;
+      const territory = 0b111_001_001n;
       const expectedCount = 5;
 
       const result = getOccupiedSquaresCount(territory);

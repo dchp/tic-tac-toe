@@ -6,6 +6,10 @@ import {
 import ValidationOutput from "./types/ValidationOutput";
 import ValidationStatusEnum from "./types/ValidationStatusEnum";
 
+const MinLineLength = 3;
+const MinBoardSize = 3;
+const MaxBoardSize = 10;
+
 const validate = (
   playerXTerritory: BoardTerritory,
   playerOTerritory: BoardTerritory,
@@ -14,17 +18,25 @@ const validate = (
 ): ValidationOutput => {
   const { width, height } = boardSize;
 
-  if (width < 3 || width > 10 || height < 3 || height > 10) {
+  if (
+    width < MinBoardSize ||
+    width > MaxBoardSize ||
+    height < MinBoardSize ||
+    height > MaxBoardSize
+  ) {
     return {
       status: ValidationStatusEnum.Error,
-      error: "Board size must be at least 3 and not bigger than 10",
+      error: `Board size must be at least ${MinBoardSize} and not bigger than ${MaxBoardSize}`,
     };
   }
 
-  if (lineLengthToWin < 3 || lineLengthToWin > Math.min(height, width)) {
+  if (
+    lineLengthToWin < MinLineLength ||
+    lineLengthToWin > Math.min(height, width)
+  ) {
     return {
       status: ValidationStatusEnum.Error,
-      error: "Line length must be at least 3 and not bigger than board size",
+      error: `Line length must be at least ${MinLineLength} and not bigger than board size`,
     };
   }
 

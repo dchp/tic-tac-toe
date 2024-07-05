@@ -1,4 +1,4 @@
-import { ValidationStatusEnum } from "./ValidationStatusEnum";
+import ValidationStatusEnum from "./ValidationStatusEnum";
 
 type ValidationOutput = {
   status: ValidationStatusEnum;
