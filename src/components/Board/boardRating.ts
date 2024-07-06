@@ -10,8 +10,6 @@ import PlayerEnum from "./types/PlayerEnum";
 
 const oneSquareRating = 1000;
 
-// VSE PRO PLAYER X, prevratit board, pokud potreba prehodit hrace
-
 export const getRatingFor = (
   player: PlayerEnum,
   board: Board,
