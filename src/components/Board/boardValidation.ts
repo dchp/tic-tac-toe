@@ -1,8 +1,7 @@
-import BoardSize from "./types/BoardSize";
-import {
-  BoardTerritory,
-  getOccupiedSquaresCount,
-} from "./types/BoardTerritory";
+import getRating from "./boardRating";
+import Board from "./types/Board";
+import { getFilledSquaresCount } from "./types/BoardTerritory";
+import PlayerEnum from "./types/PlayerEnum";
 import ValidationOutput from "./types/ValidationOutput";
 import ValidationStatusEnum from "./types/ValidationStatusEnum";
 
@@ -10,13 +9,19 @@ const MinLineLength = 3;
 const MinBoardSize = 3;
 const MaxBoardSize = 10;
 
-const validate = (
-  playerXTerritory: BoardTerritory,
-  playerOTerritory: BoardTerritory,
-  lineLengthToWin: number,
-  boardSize: BoardSize
-): ValidationOutput => {
-  const { width, height } = boardSize;
+const validate = (board: Board, lineLength: number): ValidationOutput => {
+  return (
+    validateInputParams(board, lineLength) ||
+    validateGameRules(board) ||
+    validateGameState(board, lineLength)
+  );
+};
+
+const validateInputParams = (
+  board: Board,
+  lineLength: number
+): ValidationOutput | undefined => {
+  const { width, height } = board.size;
 
   if (
     width < MinBoardSize ||
@@ -30,43 +35,16 @@ const validate = (
     };
   }
 
-  if (
-    lineLengthToWin < MinLineLength ||
-    lineLengthToWin > height ||
-    lineLengthToWin > width
-  ) {
+  if (lineLength < MinLineLength || lineLength > height || lineLength > width) {
     return {
       status: ValidationStatusEnum.Error,
       error: `Line length must be at least ${MinLineLength} and not bigger than board size`,
     };
   }
 
-  return validateTerritory(
-    playerXTerritory,
-    playerOTerritory,
-    lineLengthToWin,
-    boardSize
-  );
-};
-
-const validateTerritory = (
-  playerXTerritory: BoardTerritory,
-  playerOTerritory: BoardTerritory,
-  _lineLengthToWin: number,
-  boardSize: BoardSize
-): ValidationOutput => {
-  const { width, height } = boardSize;
-
-  if (playerXTerritory & playerOTerritory) {
-    return {
-      status: ValidationStatusEnum.Error,
-      error: "Players cannot occupy the same square",
-    };
-  }
-
   if (
-    playerXTerritory.toString(2).length > width * height ||
-    playerOTerritory.toString(2).length > width * height
+    board.playerXTerritory.toString(2).length > width * height ||
+    board.playerOTerritory.toString(2).length > width * height
   ) {
     return {
       status: ValidationStatusEnum.Error,
@@ -74,8 +52,21 @@ const validateTerritory = (
     };
   }
 
-  const playerXSquaresCount = getOccupiedSquaresCount(playerXTerritory);
-  const playerOSquaresCount = getOccupiedSquaresCount(playerOTerritory);
+  return undefined;
+};
+
+const validateGameRules = (board: Board): ValidationOutput | undefined => {
+  const { width, height } = board.size;
+
+  if (board.playerXTerritory & board.playerOTerritory) {
+    return {
+      status: ValidationStatusEnum.Error,
+      error: "Players cannot occupy the same square",
+    };
+  }
+
+  const playerXSquaresCount = getFilledSquaresCount(board.playerXTerritory);
+  const playerOSquaresCount = getFilledSquaresCount(board.playerOTerritory);
 
   if (playerXSquaresCount === 0 && playerOSquaresCount === 1) {
     return {
@@ -98,7 +89,32 @@ const validateTerritory = (
     return { status: ValidationStatusEnum.Tie };
   }
 
-  return { status: ValidationStatusEnum.Play };
+  return undefined;
 };
+
+function validateGameState(board: Board, lineLength: number): ValidationOutput {
+  const playerXRating = getRating(PlayerEnum.PlayerX, board, lineLength);
+  const playerORating = getRating(PlayerEnum.PlayerO, board, lineLength);
+
+  if (playerXRating.isWinning) {
+    if (
+      getFilledSquaresCount(board.playerOTerritory) >=
+      getFilledSquaresCount(board.playerXTerritory)
+    ) {
+      return {
+        status: ValidationStatusEnum.Error,
+        error: "Player two played after game was already won",
+      };
+    }
+
+    return { status: ValidationStatusEnum.Win };
+  }
+
+  if (playerORating.isWinning) {
+    return { status: ValidationStatusEnum.Win };
+  }
+
+  return { status: ValidationStatusEnum.Play };
+}
 
 export default validate;

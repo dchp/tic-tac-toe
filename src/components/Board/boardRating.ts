@@ -1,40 +1,130 @@
+import Board from "./types/Board";
 import BoardRating from "./types/BoardRating";
-import BoardSize from "./types/BoardSize";
-import { BoardTerritory } from "./types/BoardTerritory";
+import {
+  extractColumn,
+  extractDiagonalFromLeftToRight,
+  extractDiagonalFromRightToLeft,
+  extractRow,
+} from "./types/BoardTerritory";
+import PlayerEnum from "./types/PlayerEnum";
 
 const oneSquareRating = 1000;
 
-// TODO: implement rating function
-const rating = (
-  playerXTerritory: BoardTerritory,
-  playerOTerritory: BoardTerritory,
-  lineLengthToWin: number,
-  boardSize: BoardSize
+// VSE PRO PLAYER X, prevratit board, pokud potreba prehodit hrace
+
+export const getRatingFor = (
+  player: PlayerEnum,
+  board: Board,
+  lineLength: number
 ): BoardRating => {
-  return { value: 0 * oneSquareRating, isWinning: true };
+  const playerXLine = computeLongestLineFor(
+    PlayerEnum.PlayerX,
+    board,
+    lineLength
+  );
+  const playerOLine = computeLongestLineFor(
+    PlayerEnum.PlayerO,
+    board,
+    lineLength
+  );
+
+  return player === PlayerEnum.PlayerX
+    ? {
+        value: (playerXLine - playerOLine) * oneSquareRating,
+        isWinning: playerXLine >= lineLength,
+      }
+    : {
+        value: (playerOLine - playerXLine) * oneSquareRating,
+        isWinning: playerOLine >= lineLength,
+      };
+};
+
+const computeLongestLineFor = (
+  player: PlayerEnum,
+  board: Board,
+  lineLength: number
+): number => {
+  return Math.max(
+    getLongestHorizontalLineToWin(player, board, lineLength),
+    getLongestVerticalLineToWin(player, board, lineLength),
+    getLongestDiagonalFromLeftToRightLineToWin(player, board, lineLength),
+    getLongestDiagonalFromRightToLeftLineToWin(player, board, lineLength)
+  );
 };
 
 export const getLongestHorizontalLineToWin = (
-  playerRowTerritory: BoardTerritory,
-  blockedRowTerritory: BoardTerritory,
-  lineLengthToWin: number,
-  boardSize: BoardSize
+  player: PlayerEnum,
+  board: Board,
+  lineLength: number
 ): number => {
-  const { width, height } = boardSize;
+  const { height } = board.size;
   let longestLineToWin = 0;
 
-  for (let row = 0n; row < height; row++) {
-    const playerOnTurnBits =
-      (playerRowTerritory >> (row * width)) & ((1n << width) - 1n);
-    const blockedBits =
-      (blockedRowTerritory >> (row * width)) & ((1n << width) - 1n);
+  for (let rowIndex = 0n; rowIndex < height; rowIndex++) {
+    const row = extractRow(board, rowIndex);
+    const currentLineLength = getLongestLineToWin(player, row, lineLength);
 
-    let currentLineLength = getLongestLineToWin(
-      playerOnTurnBits,
-      blockedBits,
-      lineLengthToWin,
-      width
-    );
+    if (currentLineLength > longestLineToWin) {
+      longestLineToWin = currentLineLength;
+    }
+  }
+
+  return longestLineToWin;
+};
+
+export const getLongestVerticalLineToWin = (
+  player: PlayerEnum,
+  board: Board,
+  lineLength: number
+): number => {
+  const { width } = board.size;
+  let longestLineToWin = 0;
+
+  for (let columnIndex = 0n; columnIndex < width; columnIndex++) {
+    const column = extractColumn(board, columnIndex);
+    const currentLineLength = getLongestLineToWin(player, column, lineLength);
+
+    if (currentLineLength > longestLineToWin) {
+      longestLineToWin = currentLineLength;
+    }
+  }
+
+  return longestLineToWin;
+};
+
+export const getLongestDiagonalFromLeftToRightLineToWin = (
+  player: PlayerEnum,
+  board: Board,
+  lineLength: number
+): number => {
+  const { width, height } = board.size;
+  const diagonalCount = width + height - 1n;
+  let longestLineToWin = 0;
+
+  for (let diagonalIndex = 0n; diagonalIndex < diagonalCount; diagonalIndex++) {
+    const diagonal = extractDiagonalFromLeftToRight(board, diagonalIndex);
+    const currentLineLength = getLongestLineToWin(player, diagonal, lineLength);
+
+    if (currentLineLength > longestLineToWin) {
+      longestLineToWin = currentLineLength;
+    }
+  }
+
+  return longestLineToWin;
+};
+
+export const getLongestDiagonalFromRightToLeftLineToWin = (
+  player: PlayerEnum,
+  board: Board,
+  lineLength: number
+): number => {
+  const { width, height } = board.size;
+  const diagonalCount = width + height - 1n;
+  let longestLineToWin = 0;
+
+  for (let diagonalIndex = 0n; diagonalIndex < diagonalCount; diagonalIndex++) {
+    const diagonal = extractDiagonalFromRightToLeft(board, diagonalIndex);
+    const currentLineLength = getLongestLineToWin(player, diagonal, lineLength);
 
     if (currentLineLength > longestLineToWin) {
       longestLineToWin = currentLineLength;
@@ -45,33 +135,40 @@ export const getLongestHorizontalLineToWin = (
 };
 
 export const getLongestLineToWin = (
-  playerLineTerritory: BoardTerritory,
-  blockedLineTerritory: BoardTerritory,
-  lineLengthWinMin: number,
-  lineTeritoryLength: bigint
+  player: PlayerEnum,
+  board: Board,
+  lineLength: number
 ): number => {
+  const playerTerritory =
+    player === PlayerEnum.PlayerX
+      ? board.playerXTerritory
+      : board.playerOTerritory;
+  const oponentTerritory =
+    player === PlayerEnum.PlayerX
+      ? board.playerOTerritory
+      : board.playerXTerritory;
   let longestLineToWin = 0;
   let currentLineLength = 0;
   let currentUsableSquares = 0;
 
-  for (let squareIndex = 0n; squareIndex < lineTeritoryLength; squareIndex++) {
-    const isLineBlocked = blockedLineTerritory & (1n << squareIndex);
+  for (let squareIndex = 0n; squareIndex < board.size.width; squareIndex++) {
+    const isSquareEmpty = (oponentTerritory & (1n << squareIndex)) === 0n;
 
-    if (playerLineTerritory & (1n << squareIndex)) {
+    if (playerTerritory & (1n << squareIndex)) {
       currentLineLength += 1;
     } else {
-      if (!isLineBlocked) {
+      if (isSquareEmpty) {
         currentUsableSquares += currentLineLength;
       }
 
       if (
-        currentLineLength + currentUsableSquares >= lineLengthWinMin &&
+        currentLineLength + currentUsableSquares >= lineLength &&
         currentLineLength > longestLineToWin
       ) {
         longestLineToWin = currentLineLength;
       }
 
-      if (isLineBlocked) {
+      if (!isSquareEmpty) {
         currentUsableSquares = 0;
       }
       currentLineLength = 0;
@@ -80,9 +177,9 @@ export const getLongestLineToWin = (
 
   return longestLineToWin > currentLineLength
     ? longestLineToWin
-    : currentLineLength + currentUsableSquares >= lineLengthWinMin
+    : currentLineLength + currentUsableSquares >= lineLength
     ? currentLineLength
     : 0;
 };
 
-export default rating;
+export default getRatingFor;
