@@ -11,13 +11,13 @@ describe("BoardTerritory", () => {
   describe("extractRow", () => {
     it("should extract the correct row from the board", () => {
       const board: Board = {
-        size: { width: 5n, height: 4n },
+        size: { width: 5, height: 4 },
         playerXTerritory: 0b1111_00010_01111_00000n,
         playerOTerritory: 0b0000_11000_00000_00000n,
       };
-      const rowIndex = 1n;
+      const rowIndex = 1;
       const expectedRow: Board = {
-        size: { width: 5n, height: 1n },
+        size: { width: 5, height: 1 },
         playerXTerritory: 0b10n,
         playerOTerritory: 0b11000n,
       };
@@ -31,13 +31,13 @@ describe("BoardTerritory", () => {
   describe("extractColumn", () => {
     it("should extract the correct column from the board", () => {
       const board: Board = {
-        size: { width: 4n, height: 5n },
+        size: { width: 4, height: 5 },
         playerXTerritory: 0b0_1111_0000_1111_0000n,
         playerOTerritory: 0b0_0100_0000_0100n,
       };
-      const columnIndex = 2n;
+      const columnIndex = 2;
       const expectedColumn: Board = {
-        size: { width: 5n, height: 1n },
+        size: { width: 5, height: 1 },
         playerXTerritory: 0b01010n,
         playerOTerritory: 0b0n,
       };
@@ -49,13 +49,13 @@ describe("BoardTerritory", () => {
 
     it("should extract the correct column from the one row board", () => {
       const board: Board = {
-        size: { width: 3n, height: 1n },
+        size: { width: 3, height: 1 },
         playerXTerritory: 0b001n,
         playerOTerritory: 0b100n,
       };
-      const columnIndex = 2n;
+      const columnIndex = 2;
       const expectedColumn: Board = {
-        size: { width: 1n, height: 1n },
+        size: { width: 1, height: 1 },
         playerXTerritory: 0b1n,
         playerOTerritory: 0b0n,
       };
@@ -69,13 +69,13 @@ describe("BoardTerritory", () => {
   describe("extractDiagonalFromLeftToRight", () => {
     it("should extract the first diagonal from the left of the board", () => {
       const board: Board = {
-        size: { width: 3n, height: 4n },
+        size: { width: 3, height: 4 },
         playerXTerritory: 0b0_111_101_001n,
         playerOTerritory: 0n,
       };
-      const diagonalIndex = 0n;
+      const diagonalIndex = 0;
       const expectedDiagonal: Board = {
-        size: { width: 1n, height: 1n },
+        size: { width: 1, height: 1 },
         playerXTerritory: 0b0n,
         playerOTerritory: 0n,
       };
@@ -87,13 +87,13 @@ describe("BoardTerritory", () => {
 
     it("should extract the middle diagonal from the board", () => {
       const board: Board = {
-        size: { width: 3n, height: 4n },
+        size: { width: 3, height: 4 },
         playerXTerritory: 0b0_111_101_001n,
         playerOTerritory: 0n,
       };
-      const diagonalIndex = 2n;
+      const diagonalIndex = 2;
       const expectedDiagonal: Board = {
-        size: { width: 3n, height: 1n },
+        size: { width: 3, height: 1 },
         playerXTerritory: 0b110n,
         playerOTerritory: 0n,
       };
@@ -105,13 +105,13 @@ describe("BoardTerritory", () => {
 
     it("should extract the last diagonal from the left of the board", () => {
       const board: Board = {
-        size: { width: 3n, height: 4n },
+        size: { width: 3, height: 4 },
         playerXTerritory: 0b0_111_101_001n,
         playerOTerritory: 0n,
       };
-      const diagonalIndex = 5n;
+      const diagonalIndex = 5;
       const expectedDiagonal: Board = {
-        size: { width: 1n, height: 1n },
+        size: { width: 1, height: 1 },
         playerXTerritory: 0b1n,
         playerOTerritory: 0n,
       };
@@ -125,13 +125,13 @@ describe("BoardTerritory", () => {
   describe("extractDiagonalFromRightToLeft", () => {
     it("should extract the first diagonal from the right of the board", () => {
       const board: Board = {
-        size: { width: 3n, height: 4n },
+        size: { width: 3, height: 4 },
         playerXTerritory: 0b0_111_101_001n,
         playerOTerritory: 0n,
       };
-      const diagonalIndex = 0n;
+      const diagonalIndex = 0;
       const expectedDiagonal: Board = {
-        size: { width: 1n, height: 1n },
+        size: { width: 1, height: 1 },
         playerXTerritory: 0b0n,
         playerOTerritory: 0b0n,
       };
@@ -143,13 +143,13 @@ describe("BoardTerritory", () => {
 
     it("should extract the middle diagonal from the board", () => {
       const board: Board = {
-        size: { width: 3n, height: 4n },
+        size: { width: 3, height: 4 },
         playerXTerritory: 0b0_111_101_001n,
         playerOTerritory: 0n,
       };
-      const diagonalIndex = 2n;
+      const diagonalIndex = 2;
       const expectedDiagonal: Board = {
-        size: { width: 3n, height: 1n },
+        size: { width: 3, height: 1 },
         playerXTerritory: 0b110n,
         playerOTerritory: 0n,
       };
@@ -161,13 +161,13 @@ describe("BoardTerritory", () => {
 
     it("should extract the last diagonal from the right of the board", () => {
       const board: Board = {
-        size: { width: 3n, height: 4n },
+        size: { width: 3, height: 4 },
         playerXTerritory: 0b0_111_101_001n,
         playerOTerritory: 0n,
       };
-      const diagonalIndex = 5n;
+      const diagonalIndex = 5;
       const expectedDiagonal: Board = {
-        size: { width: 1n, height: 1n },
+        size: { width: 1, height: 1 },
         playerXTerritory: 0n,
         playerOTerritory: 0n,
       };

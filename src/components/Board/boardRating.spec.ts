@@ -11,7 +11,7 @@ describe("boardRating", () => {
   const player = PlayerEnum.PlayerX;
 
   describe("getLongestLineToWin", () => {
-    const boardLineSize = { width: 10n, height: 1n };
+    const boardLineSize = { width: 10, height: 1 };
 
     it("should return 0 if no line exists", () => {
       const board: Board = {
@@ -65,7 +65,7 @@ describe("boardRating", () => {
   });
 
   describe("getLongestHorizontalLineToWin", () => {
-    const boardSize = { width: 4n, height: 4n };
+    const boardSize = { width: 4, height: 4 };
 
     it("should return 0 if no horizontal line exists", () => {
       const board: Board = {
@@ -119,7 +119,7 @@ describe("boardRating", () => {
   });
 
   describe("getLongestVerticalLineToWin", () => {
-    const boardSize = { width: 4n, height: 4n };
+    const boardSize = { width: 4, height: 4 };
 
     it("should return 0 if no vertical line exists", () => {
       const board: Board = {
@@ -173,7 +173,7 @@ describe("boardRating", () => {
   });
 
   describe("getLongestDiagonalFromLeftToRightLineToWin", () => {
-    const boardSize = { width: 4n, height: 3n };
+    const boardSize = { width: 4, height: 3 };
 
     it("should return 0 if no diagonal line (from left to right) exists", () => {
       const board: Board = {

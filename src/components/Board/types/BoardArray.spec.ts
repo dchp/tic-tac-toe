@@ -30,7 +30,7 @@ describe("BoardArray", () => {
         ["", "", ""],
       ];
       const expectedBoard: Board = {
-        size: { width: 3n, height: 3n },
+        size: { width: 3, height: 3 },
         playerXTerritory: 0n,
         playerOTerritory: 0n,
       };
@@ -47,7 +47,7 @@ describe("BoardArray", () => {
         ["X", "O", ""],
       ];
       const expectedBoard: Board = {
-        size: { width: 3n, height: 3n },
+        size: { width: 3, height: 3 },
         playerXTerritory: 0b101_010_100n,
         playerOTerritory: 0b010_101_010n,
       };

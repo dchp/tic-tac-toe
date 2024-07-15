@@ -20,7 +20,7 @@ export function getBoard(board: BoardArray): Board {
   }
 
   return {
-    size: { width: BigInt(board[0].length), height: BigInt(board.length) },
+    size: { width: board[0].length, height: board.length },
     playerXTerritory: playerXTerritory,
     playerOTerritory: playerOTerritory,
   };

@@ -85,7 +85,7 @@ const validateGameRules = (board: Board): ValidationOutput | undefined => {
     };
   }
 
-  if (BigInt(playerXSquaresCount + playerOSquaresCount) === width * height) {
+  if (playerXSquaresCount + playerOSquaresCount === width * height) {
     return { status: ValidationStatusEnum.Tie };
   }
 
@@ -96,7 +96,7 @@ function validateGameState(board: Board, lineLength: number): ValidationOutput {
   const playerXRating = getRating(PlayerEnum.PlayerX, board, lineLength);
   const playerORating = getRating(PlayerEnum.PlayerO, board, lineLength);
 
-  if (playerXRating.isWinning) {
+  if (playerXRating.isWinner) {
     if (
       getFilledSquaresCount(board.playerOTerritory) >=
       getFilledSquaresCount(board.playerXTerritory)
@@ -110,7 +110,7 @@ function validateGameState(board: Board, lineLength: number): ValidationOutput {
     return { status: ValidationStatusEnum.Win };
   }
 
-  if (playerORating.isWinning) {
+  if (playerORating.isWinner) {
     return { status: ValidationStatusEnum.Win };
   }
 

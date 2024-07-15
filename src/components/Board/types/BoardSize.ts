@@ -1,3 +1,3 @@
-type BoardSize = { width: bigint; height: bigint };
+type BoardSize = { width: number; height: number };
 
 export default BoardSize;

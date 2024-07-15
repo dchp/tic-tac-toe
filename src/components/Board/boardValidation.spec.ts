@@ -5,7 +5,7 @@ import ValidationStatusEnum from "./types/ValidationStatusEnum";
 describe("boardValidation", () => {
   describe("validate", () => {
     const lineLength = 3;
-    const boardSize = { width: 3n, height: 3n };
+    const boardSize = { width: 3, height: 3 };
 
     it("should return error when first move is not made by player X", () => {
       const board: Board = {
@@ -183,8 +183,8 @@ describe("boardValidation", () => {
     it("should return error when board width is smaller than 3", () => {
       const board: Board = {
         size: {
-          width: 2n,
-          height: 3n,
+          width: 2,
+          height: 3,
         },
         playerXTerritory: 0b100_000n,
         playerOTerritory: 0b000_100n,
@@ -202,8 +202,8 @@ describe("boardValidation", () => {
     it("should return error when board height is smaller than 3", () => {
       const board: Board = {
         size: {
-          width: 3n,
-          height: 2n,
+          width: 3,
+          height: 2,
         },
         playerXTerritory: 0b100_000n,
         playerOTerritory: 0b000_100n,
@@ -221,8 +221,8 @@ describe("boardValidation", () => {
     it("should return error when board width is bigger than 10", () => {
       const board: Board = {
         size: {
-          width: 11n,
-          height: 3n,
+          width: 11,
+          height: 3,
         },
         playerXTerritory: 0b100_000_000n,
         playerOTerritory: 0b000_100_000n,
@@ -240,8 +240,8 @@ describe("boardValidation", () => {
     it("should return error when board height is bigger than 10", () => {
       const board: Board = {
         size: {
-          width: 3n,
-          height: 11n,
+          width: 3,
+          height: 11,
         },
         playerXTerritory: 0b100_000_000n,
         playerOTerritory: 0b000_100_000n,
@@ -259,8 +259,8 @@ describe("boardValidation", () => {
     it("should return play when board has max size and game can continue", () => {
       const board: Board = {
         size: {
-          width: 10n,
-          height: 10n,
+          width: 10,
+          height: 10,
         },
         playerXTerritory:
           0b1111111110_1111111110_1111111110_1111111110_1111111110_0000000000_0000000000_0000000000_0000000000_0000000000n,

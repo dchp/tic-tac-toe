@@ -1,4 +1,4 @@
-import Board from "./types/Board";
+import Board, { getTerritoryFor, isSquareEmpty } from "./types/Board";
 import BoardRating from "./types/BoardRating";
 import {
   extractColumn,
@@ -9,6 +9,7 @@ import {
 import PlayerEnum from "./types/PlayerEnum";
 
 const oneSquareRating = 1000;
+const winRating = 1000000;
 
 export const getRatingFor = (
   player: PlayerEnum,
@@ -20,21 +21,33 @@ export const getRatingFor = (
     board,
     lineLength
   );
+
   const playerOLine = computeLongestLineFor(
     PlayerEnum.PlayerO,
     board,
     lineLength
   );
 
-  return player === PlayerEnum.PlayerX
-    ? {
-        value: (playerXLine - playerOLine) * oneSquareRating,
-        isWinning: playerXLine >= lineLength,
-      }
-    : {
-        value: (playerOLine - playerXLine) * oneSquareRating,
-        isWinning: playerOLine >= lineLength,
-      };
+  const isWinning =
+    player === PlayerEnum.PlayerX
+      ? playerXLine >= lineLength
+      : playerOLine >= lineLength;
+  const isLooser =
+    player === PlayerEnum.PlayerX
+      ? playerOLine >= lineLength
+      : playerXLine >= lineLength;
+
+  const playerXRating = (playerXLine - playerOLine) * oneSquareRating;
+
+  return {
+    value: isWinning
+      ? winRating
+      : isLooser
+      ? -winRating
+      : playerXRating * (player === PlayerEnum.PlayerX ? 1 : -1),
+    isWinner: isWinning,
+    isLooser: isLooser,
+  };
 };
 
 const computeLongestLineFor = (
@@ -58,7 +71,7 @@ export const getLongestHorizontalLineToWin = (
   const { height } = board.size;
   let longestLineToWin = 0;
 
-  for (let rowIndex = 0n; rowIndex < height; rowIndex++) {
+  for (let rowIndex = 0; rowIndex < height; rowIndex++) {
     const row = extractRow(board, rowIndex);
     const currentLineLength = getLongestLineToWin(player, row, lineLength);
 
@@ -78,7 +91,7 @@ export const getLongestVerticalLineToWin = (
   const { width } = board.size;
   let longestLineToWin = 0;
 
-  for (let columnIndex = 0n; columnIndex < width; columnIndex++) {
+  for (let columnIndex = 0; columnIndex < width; columnIndex++) {
     const column = extractColumn(board, columnIndex);
     const currentLineLength = getLongestLineToWin(player, column, lineLength);
 
@@ -96,10 +109,10 @@ export const getLongestDiagonalFromLeftToRightLineToWin = (
   lineLength: number
 ): number => {
   const { width, height } = board.size;
-  const diagonalCount = width + height - 1n;
+  const diagonalCount = width + height - 1;
   let longestLineToWin = 0;
 
-  for (let diagonalIndex = 0n; diagonalIndex < diagonalCount; diagonalIndex++) {
+  for (let diagonalIndex = 0; diagonalIndex < diagonalCount; diagonalIndex++) {
     const diagonal = extractDiagonalFromLeftToRight(board, diagonalIndex);
     const currentLineLength = getLongestLineToWin(player, diagonal, lineLength);
 
@@ -117,10 +130,10 @@ export const getLongestDiagonalFromRightToLeftLineToWin = (
   lineLength: number
 ): number => {
   const { width, height } = board.size;
-  const diagonalCount = width + height - 1n;
+  const diagonalCount = width + height - 1;
   let longestLineToWin = 0;
 
-  for (let diagonalIndex = 0n; diagonalIndex < diagonalCount; diagonalIndex++) {
+  for (let diagonalIndex = 0; diagonalIndex < diagonalCount; diagonalIndex++) {
     const diagonal = extractDiagonalFromRightToLeft(board, diagonalIndex);
     const currentLineLength = getLongestLineToWin(player, diagonal, lineLength);
 
@@ -137,25 +150,18 @@ export const getLongestLineToWin = (
   board: Board,
   lineLength: number
 ): number => {
-  const playerTerritory =
-    player === PlayerEnum.PlayerX
-      ? board.playerXTerritory
-      : board.playerOTerritory;
-  const oponentTerritory =
-    player === PlayerEnum.PlayerX
-      ? board.playerOTerritory
-      : board.playerXTerritory;
+  const playerTerritory = getTerritoryFor(player, board);
   let longestLineToWin = 0;
   let currentLineLength = 0;
   let currentUsableSquares = 0;
 
   for (let squareIndex = 0n; squareIndex < board.size.width; squareIndex++) {
-    const isSquareEmpty = (oponentTerritory & (1n << squareIndex)) === 0n;
+    const isEmpty = isSquareEmpty(board, squareIndex);
 
     if (playerTerritory & (1n << squareIndex)) {
       currentLineLength += 1;
     } else {
-      if (isSquareEmpty) {
+      if (isEmpty) {
         currentUsableSquares += currentLineLength;
       }
 
@@ -166,7 +172,7 @@ export const getLongestLineToWin = (
         longestLineToWin = currentLineLength;
       }
 
-      if (!isSquareEmpty) {
+      if (!isEmpty) {
         currentUsableSquares = 0;
       }
       currentLineLength = 0;
