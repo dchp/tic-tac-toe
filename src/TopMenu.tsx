@@ -8,6 +8,7 @@ import {
   Select,
   TextField,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { Refresh as RefreshIcon } from "@mui/icons-material";
 import GameStateEnum from "./components/Board/types/GameStateEnum";
@@ -15,6 +16,7 @@ import PlayerEnum from "./components/Board/types/PlayerEnum";
 import PlayerTypeEnum from "./components/Board/types/PlayerType";
 import { runInAction } from "mobx";
 import React from "react";
+import theme from "./theme/theme";
 
 type TopMenuProps = {
   gameStore: GameStore;
@@ -59,16 +61,22 @@ const TopMenu: React.FC<TopMenuProps> = observer(({ gameStore }) => {
 });
 
 const PlayersSetting: React.FC<TopMenuProps> = observer(({ gameStore }) => {
+  const isMobile = useMediaQuery(theme.breakpoints.down(500));
+  const labelWidth = isMobile ? "130px" : "195px";
+
   return (
     <Box display={"flex"} flexDirection={"column"} gap={"5px"}>
       <FormControlLabel
-        label={`Player ${PlayerEnum.PlayerX}`}
-        style={{ width: "195px", justifyContent: "space-between" }}
+        label={isMobile ? PlayerEnum.PlayerX : `Player ${PlayerEnum.PlayerX}`}
+        style={{
+          width: labelWidth,
+          justifyContent: "space-between",
+        }}
         labelPlacement="start"
         control={
           <Select
             value={gameStore.playerX}
-            style={{ width: "115px" }}
+            style={{ width: isMobile ? "105px" : "115px" }}
             onChange={(event) =>
               runInAction(
                 () => (gameStore.playerX = event.target.value as PlayerTypeEnum)
@@ -80,20 +88,20 @@ const PlayersSetting: React.FC<TopMenuProps> = observer(({ gameStore }) => {
               {PlayerTypeEnum.Human}
             </MenuItem>
             <MenuItem value={PlayerTypeEnum.Computer}>
-              {PlayerTypeEnum.Computer}
+              {isMobile ? "AI" : PlayerTypeEnum.Computer}
             </MenuItem>
           </Select>
         }
       />
 
       <FormControlLabel
-        label={`Player ${PlayerEnum.PlayerO}`}
-        style={{ width: "195px", justifyContent: "space-between" }}
+        label={isMobile ? PlayerEnum.PlayerO : `Player ${PlayerEnum.PlayerO}`}
+        style={{ width: labelWidth, justifyContent: "space-between" }}
         labelPlacement="start"
         control={
           <Select
             value={gameStore.playerO}
-            style={{ width: "115px" }}
+            style={{ width: isMobile ? "105px" : "115px" }}
             onChange={(event) =>
               runInAction(
                 () => (gameStore.playerO = event.target.value as PlayerTypeEnum)
@@ -105,7 +113,7 @@ const PlayersSetting: React.FC<TopMenuProps> = observer(({ gameStore }) => {
               {PlayerTypeEnum.Human}
             </MenuItem>
             <MenuItem value={PlayerTypeEnum.Computer}>
-              {PlayerTypeEnum.Computer}
+              {isMobile ? "AI" : PlayerTypeEnum.Computer}
             </MenuItem>
           </Select>
         }
@@ -115,6 +123,8 @@ const PlayersSetting: React.FC<TopMenuProps> = observer(({ gameStore }) => {
 });
 
 const BoardSetting: React.FC<TopMenuProps> = observer(({ gameStore }) => {
+  const isMobile = useMediaQuery(theme.breakpoints.down(500));
+
   return (
     <Box
       display={"flex"}
@@ -124,8 +134,11 @@ const BoardSetting: React.FC<TopMenuProps> = observer(({ gameStore }) => {
       marginLeft={"15px"}
     >
       <FormControlLabel
-        label={"Board size"}
-        style={{ width: "240px", justifyContent: "space-between" }}
+        label={isMobile ? "Board" : "Board size"}
+        style={{
+          width: isMobile ? "116px" : "240px",
+          justifyContent: "space-between",
+        }}
         labelPlacement="start"
         disabled={gameStore.isGameStarted}
         control={
@@ -148,50 +161,70 @@ const BoardSetting: React.FC<TopMenuProps> = observer(({ gameStore }) => {
               value={gameStore.size.width}
               onChange={(event) => {
                 runInAction(() => {
-                  gameStore.size.width = Number(event.target.value);
-                  if (gameStore.lineLength > gameStore.size.width) {
-                    gameStore.lineLength = gameStore.size.width;
+                  let width = Number(event.target.value);
+
+                  width = Math.min(Math.max(3, width), 10);
+                  gameStore.size.width = width;
+
+                  if (isMobile) {
+                    gameStore.size.height = width;
+                  }
+
+                  if (gameStore.lineLength > width) {
+                    gameStore.lineLength = width;
                   }
                 });
               }}
             />
-            <Typography
-              style={{
-                color: gameStore.isComputerOnMove ? "grey" : "inherit",
-              }}
-            >
-              ×
-            </Typography>
-            <TextField
-              type="number"
-              sx={{ width: "65px" }}
-              disabled={gameStore.isGameStarted}
-              InputProps={{
-                inputProps: {
-                  min: 3,
-                  max: 10,
-                },
-              }}
-              value={gameStore.size.height}
-              onChange={(event) => {
-                runInAction(() => {
-                  gameStore.size.height = Number(event.target.value);
-                  if (gameStore.lineLength > gameStore.size.height) {
-                    gameStore.lineLength = gameStore.size.height;
-                  }
-                });
-              }}
-            />
+            {!isMobile && (
+              <>
+                <Typography
+                  style={{
+                    color: gameStore.isComputerOnMove ? "grey" : "inherit",
+                  }}
+                >
+                  ×
+                </Typography>
+                <TextField
+                  type="number"
+                  sx={{ width: "65px" }}
+                  disabled={gameStore.isGameStarted}
+                  InputProps={{
+                    inputProps: {
+                      min: 3,
+                      max: 10,
+                    },
+                  }}
+                  value={gameStore.size.height}
+                  onChange={(event) => {
+                    runInAction(() => {
+                      let height = Number(event.target.value);
+
+                      height = Math.min(Math.max(3, height), 10);
+                      gameStore.size.height = height;
+
+                      if (isMobile) {
+                        gameStore.size.width = height;
+                      }
+
+                      if (gameStore.lineLength > height) {
+                        gameStore.lineLength = height;
+                      }
+                    });
+                  }}
+                />
+              </>
+            )}
           </Box>
         }
       />
 
       <FormControlLabel
-        label={"Line length"}
+        label={isMobile ? "Line" : "Line length"}
         labelPlacement="start"
         disabled={gameStore.isGameStarted}
         control={
-          <Box marginLeft={"8px"} flexGrow={1}>
+          <Box marginLeft={isMobile ? "20px" : "8px"} flexGrow={1}>
             <TextField
               sx={{ width: "65px" }}
               type="number"
@@ -203,11 +236,16 @@ const BoardSetting: React.FC<TopMenuProps> = observer(({ gameStore }) => {
                 },
               }}
               value={gameStore.lineLength}
-              onChange={(event) =>
-                runInAction(
-                  () => (gameStore.lineLength = Number(event.target.value))
-                )
-              }
+              onChange={(event) => {
+                let lineLength = Number(event.target.value);
+
+                lineLength = Math.min(
+                  Math.max(3, lineLength),
+                  Math.min(gameStore.size.width, gameStore.size.height)
+                );
+
+                runInAction(() => (gameStore.lineLength = lineLength));
+              }}
             />
           </Box>
         }

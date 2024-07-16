@@ -2,25 +2,14 @@ import createGameStore from "./components/Board/gameStore";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { computeBestMoveAsync } from "./components/Board/computerAI";
-import { Box, createTheme, ThemeProvider } from "@mui/material";
+import { Box, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import BoardType from "./components/Board/types/Board";
 import Board from "./components/Board/Board";
 import TopMenu from "./TopMenu";
 import { runInAction } from "mobx";
 import GameStateEnum from "./components/Board/types/GameStateEnum";
-
-const theme = createTheme({
-  components: {
-    MuiCssBaseline: {
-      styleOverrides: `
-        body {
-          background-color: #bdbdbd;
-        }
-      `,
-    },
-  },
-});
+import theme from "./theme/theme";
 
 const TicTacToe = observer(() => {
   const [gameStore] = useState(
