@@ -2,12 +2,14 @@ import { GameStore } from "./components/Board/gameStore";
 import { observer } from "mobx-react-lite";
 import {
   Box,
+  Button,
   FormControlLabel,
   MenuItem,
   Select,
   TextField,
   Typography,
 } from "@mui/material";
+import { Refresh as RefreshIcon } from "@mui/icons-material";
 import GameStateEnum from "./components/Board/types/GameStateEnum";
 import PlayerEnum from "./components/Board/types/PlayerEnum";
 import PlayerTypeEnum from "./components/Board/types/PlayerType";
@@ -21,9 +23,27 @@ type TopMenuProps = {
 const TopMenu: React.FC<TopMenuProps> = observer(({ gameStore }) => {
   return (
     <Box m={3} marginBottom={0.5}>
-      <Typography variant="h4" component="h1" marginBottom={"10px"}>
-        Tic-Tac-Toe
-      </Typography>
+      <Box
+        display="flex"
+        flexDirection={"row"}
+        gap="10px"
+        marginBottom={"10px"}
+      >
+        <Typography variant="h4" component="h1">
+          Tic-Tac-Toe
+        </Typography>
+        <Button
+          color="primary"
+          onClick={() => {
+            gameStore.resetGame();
+          }}
+          startIcon={<RefreshIcon />}
+          disabled={gameStore.isComputerThinking}
+        >
+          New Game
+        </Button>
+      </Box>
+
       <Box
         display={"flex"}
         alignItems="flex-start"
@@ -127,9 +147,12 @@ const BoardSetting: React.FC<TopMenuProps> = observer(({ gameStore }) => {
               }}
               value={gameStore.size.width}
               onChange={(event) => {
-                runInAction(
-                  () => (gameStore.size.width = Number(event.target.value))
-                );
+                runInAction(() => {
+                  gameStore.size.width = Number(event.target.value);
+                  if (gameStore.lineLength > gameStore.size.width) {
+                    gameStore.lineLength = gameStore.size.width;
+                  }
+                });
               }}
             />
             <Typography
@@ -151,9 +174,12 @@ const BoardSetting: React.FC<TopMenuProps> = observer(({ gameStore }) => {
               }}
               value={gameStore.size.height}
               onChange={(event) => {
-                runInAction(
-                  () => (gameStore.size.height = Number(event.target.value))
-                );
+                runInAction(() => {
+                  gameStore.size.height = Number(event.target.value);
+                  if (gameStore.lineLength > gameStore.size.height) {
+                    gameStore.lineLength = gameStore.size.height;
+                  }
+                });
               }}
             />
           </Box>

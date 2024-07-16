@@ -24,6 +24,7 @@ export type GameStore = {
   isComputerOnMove: boolean;
   isComputerThinking: boolean;
   isGameStarted: boolean;
+  resetGame(): void;
 };
 
 function createGameStore(
@@ -41,6 +42,13 @@ function createGameStore(
     gameState: GameStateEnum.Play as GameStateEnum,
     playerOnMove: PlayerEnum.PlayerX as PlayerEnum | undefined,
     isComputerThinking: false,
+
+    resetGame() {
+      this.playerXTerritory = 0n;
+      this.playerOTerritory = 0n;
+      this.playerOnMove = PlayerEnum.PlayerX;
+      this.gameState = GameStateEnum.Play;
+    },
 
     markField: function (fieldIndex: bigint) {
       const newBoard = this.board;
