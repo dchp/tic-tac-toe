@@ -1,6 +1,6 @@
 enum PlayerEnum {
-  PlayerX = "X",
-  PlayerO = "O",
+  PlayerX = "❌",
+  PlayerO = "🔵",
 }
 
 export const getOponent = (player: PlayerEnum): PlayerEnum => {

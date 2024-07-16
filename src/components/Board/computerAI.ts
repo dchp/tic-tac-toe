@@ -34,9 +34,10 @@ export const computeBestMoveAsync = async (
       bestMoves = [newBoard];
     }
 
-    if (rating.isWinner && maxDepth === 0) {
-      break;
-    }
+    // TODO: break for loop when move is winning
+    // if (rating.isWinner && maxDepth === 0) {
+    //   break;
+    // }
   }
   bestRatingMemo.clear();
 
@@ -61,11 +62,11 @@ const getDepth = (board: Board): number => {
 
   let depth = 0;
 
-  if (getSquareCount(board) - symbolCount <= 20) {
-    depth = 3;
-  } else if (getSquareCount(board) - symbolCount <= 40) {
+  if (symbolCount <= 3) {
+    depth = 1;
+  } else if (getSquareCount(board) - symbolCount <= 20) {
     depth = 2;
-  } else if (getSquareCount(board) - symbolCount <= 60) {
+  } else if (getSquareCount(board) - symbolCount <= 40) {
     depth = 1;
   }
 

@@ -11,25 +11,28 @@ export type GameStore = {
   size: BoardSize;
   playerXTerritory: BoardTerritory;
   playerOTerritory: BoardTerritory;
-  lineLengthToWin: number;
+  lineLength: number;
   playerX: PlayerTypeEnum;
   playerO: PlayerTypeEnum;
   gameState: GameStateEnum;
-  playerOnMove?: PlayerEnum;
   playerTypeOnMove?: PlayerTypeEnum;
+  playerOnMove?: PlayerEnum;
   board: Board;
   switchPlayer(): void;
   markField(fieldIndex: bigint): void;
   turnTo(newBoard: Board): void;
+  isComputerOnMove: boolean;
+  isComputerThinking: boolean;
+  isGameStarted: boolean;
 };
 
 function createGameStore(
   board: Board,
-  lineLengthToWin: number,
+  lineLength: number,
   onError?: (error: string) => void
 ): GameStore {
   return makeAutoObservable({
-    lineLengthToWin: lineLengthToWin,
+    lineLength: lineLength,
     size: board.size,
     playerXTerritory: board.playerXTerritory,
     playerOTerritory: board.playerOTerritory,
@@ -37,6 +40,7 @@ function createGameStore(
     playerO: PlayerTypeEnum.Computer as PlayerTypeEnum,
     gameState: GameStateEnum.Play as GameStateEnum,
     playerOnMove: PlayerEnum.PlayerX as PlayerEnum | undefined,
+    isComputerThinking: false,
 
     markField: function (fieldIndex: bigint) {
       const newBoard = this.board;
@@ -51,7 +55,7 @@ function createGameStore(
     },
 
     turnTo: function (newBoard: Board) {
-      const validattion = validate(newBoard, this.lineLengthToWin);
+      const validattion = validate(newBoard, this.lineLength);
 
       if (validattion.error && onError) {
         onError(validattion.error);
@@ -71,6 +75,21 @@ function createGameStore(
       return this.playerOnMove === PlayerEnum.PlayerX
         ? this.playerX
         : this.playerO;
+    },
+
+    get isGameStarted(): boolean {
+      return (
+        this.playerXTerritory !== 0n ||
+        this.playerOTerritory !== 0n ||
+        this.isComputerThinking
+      );
+    },
+
+    get isComputerOnMove(): boolean {
+      const movingPlayerType =
+        this.playerOnMove === PlayerEnum.PlayerX ? this.playerX : this.playerO;
+
+      return movingPlayerType === PlayerTypeEnum.Computer;
     },
 
     get board(): Board {

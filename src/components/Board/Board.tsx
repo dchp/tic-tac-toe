@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import { Grid } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import BoardSquareEnum from "./types/BoardSquareEnum";
@@ -5,24 +6,22 @@ import BoardSquare from "./BoardSquare";
 import { GameStore } from "./gameStore";
 import { squareIndexes } from "./types/Board";
 import GameStateEnum from "./types/GameStateEnum";
-import PlayerTypeEnum from "./types/PlayerType";
 
 type BoardProps = {
   gameStore: GameStore;
   onSquareClick: (squareIndex: bigint) => void;
 };
 
-const Board: React.FC<BoardProps> = ({ gameStore, onSquareClick }) => {
+const Board: React.FC<BoardProps> = observer(({ gameStore, onSquareClick }) => {
   const board = gameStore.board;
   const parentBoxRef = useRef<HTMLDivElement | null>(null);
   const [squareSize, setSquareSize] = useState(0);
-  const boardMargin = 10;
+  const boardMargin = 15;
 
   useEffect(() => {
     const updateSquareSize = () => {
       if (parentBoxRef.current) {
         const { width, height } = parentBoxRef.current.getBoundingClientRect();
-
         const squareWidthMax = (width - 2 * boardMargin) / board.size.width;
         const squareHeightMax = (height - 2 * boardMargin) / board.size.height;
         const squareSize = Math.min(squareWidthMax, squareHeightMax);
@@ -72,7 +71,7 @@ const Board: React.FC<BoardProps> = ({ gameStore, onSquareClick }) => {
               isClicable={
                 state === BoardSquareEnum.Empty &&
                 gameStore.gameState === GameStateEnum.Play &&
-                gameStore.playerTypeOnMove === PlayerTypeEnum.Human
+                !gameStore.isComputerOnMove
               }
               onClick={() => onSquareClick(squareIndex)}
               index={squareIndex}
@@ -81,6 +80,6 @@ const Board: React.FC<BoardProps> = ({ gameStore, onSquareClick }) => {
         })}
     </Grid>
   );
-};
+});
 
 export default Board;
